@@ -12,7 +12,6 @@ public class ImpostoDeRenda implements FachadaExperimento{
 	
 	public void criarNovoTitular(Titular titular) {
 		titulares.add(titular);
-		
 	}
 
 	public List<Titular> listarTitulares() {
