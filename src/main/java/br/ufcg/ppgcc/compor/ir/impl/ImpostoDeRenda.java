@@ -9,26 +9,27 @@ import br.ufcg.ppgcc.compor.ir.Dependente;
 import br.ufcg.ppgcc.compor.ir.ExcecaoImpostoDeRenda;
 import br.ufcg.ppgcc.compor.ir.FachadaExperimento;
 import br.ufcg.ppgcc.compor.ir.FontePagadora;
+import br.ufcg.ppgcc.compor.ir.Resultado;
 import br.ufcg.ppgcc.compor.ir.Titular;
 
-public class ImpostoDeRenda implements FachadaExperimento{
-	
+public class ImpostoDeRenda implements FachadaExperimento {
+
 	private Map<Titular, List<FontePagadora>> historicoTitularFonte = new LinkedHashMap<Titular, List<FontePagadora>>();
 	private Map<Titular, List<Dependente>> mapaTitularDependente = new LinkedHashMap<Titular, List<Dependente>>();
-	
+
 	public void criarNovoTitular(Titular titular) {
-		if(titular.getNome() == null){
+		if (titular.getNome() == null) {
 			throw new ExcecaoImpostoDeRenda("O campo nome é obrigatório");
 		}
-		
+
 		if (titular.getCpf() == null) {
 			throw new ExcecaoImpostoDeRenda("O campo CPF é obrigatório");
 		}
-		
+
 		if (!ValidarCpf.validarCpf(titular.getCpf())) {
 			throw new ExcecaoImpostoDeRenda("O campo CPF está inválido");
 		}
-		
+
 		historicoTitularFonte.put(titular, new ArrayList<FontePagadora>());
 		mapaTitularDependente.put(titular, new ArrayList<Dependente>());
 	}
@@ -56,7 +57,7 @@ public class ImpostoDeRenda implements FachadaExperimento{
 				"[\\d]{2}\\.[\\d]{3}\\.[\\d]{3}\\/[\\d]{4}\\-[\\d]{2}")) {
 			throw new ExcecaoImpostoDeRenda("O campo CPF/CNPJ é inválido");
 		}
-		
+
 		if (historicoTitularFonte.containsKey(titular)) {
 			List<FontePagadora> listaDeFontesDoTitular = historicoTitularFonte
 					.get(titular);
@@ -72,35 +73,49 @@ public class ImpostoDeRenda implements FachadaExperimento{
 	}
 
 	public void criarDependente(Titular titular, Dependente dependente) {
-		if(dependente.getCpf() == null){
+		if (dependente.getCpf() == null) {
 			throw new ExcecaoImpostoDeRenda("O campo CPF é obrigatório");
 		}
-		
-		if(dependente.getNome() == null){
+
+		if (dependente.getNome() == null) {
 			throw new ExcecaoImpostoDeRenda("O campo nome é obrigatório");
 		}
-		
-		if(dependente.getTipo() == 0){
+
+		if (dependente.getTipo() == 0) {
 			throw new ExcecaoImpostoDeRenda("O campo tipo é obrigatório");
-		}else if(dependente.getTipo() < 0 ){
+		} else if (dependente.getTipo() < 0) {
 			throw new ExcecaoImpostoDeRenda("O campo tipo é inválido");
 		}
-		
+
 		if (!ValidarCpf.validarCpf(dependente.getCpf())) {
 			throw new ExcecaoImpostoDeRenda("O campo CPF é inválido");
 		}
-		
-		if(mapaTitularDependente.containsKey(titular)){
-			List<Dependente> listaDeDependentesDoTitular = mapaTitularDependente.get(titular);
+
+		if (mapaTitularDependente.containsKey(titular)) {
+			List<Dependente> listaDeDependentesDoTitular = mapaTitularDependente
+					.get(titular);
 			listaDeDependentesDoTitular.add(dependente);
 			mapaTitularDependente.put(titular, listaDeDependentesDoTitular);
-		}else{
+		} else {
 			throw new ExcecaoImpostoDeRenda("Titular não cadastrado");
 		}
 	}
 
 	public List<Dependente> listarDependentes(Titular titular) {
 		return mapaTitularDependente.get(titular);
+	}
+
+	public Resultado declaracaoCompleta(Titular titular) {
+		Resultado resultado = new Resultado();
+		double somatorioImpostoDevido = 0;
+		for (FontePagadora fp : listarFontes(titular)) {
+			somatorioImpostoDevido += fp.getRendimentoRecebidos();
+		}
+		
+		if (somatorioImpostoDevido < 19.000) {
+			resultado.setImpostoDevido(0);
+		}
+		return resultado;
 	}
 
 }

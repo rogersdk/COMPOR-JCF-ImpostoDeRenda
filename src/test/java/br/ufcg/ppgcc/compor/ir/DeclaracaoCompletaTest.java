@@ -32,7 +32,7 @@ public class DeclaracaoCompletaTest {
 		assertEquals(0, completo.getImpostoDevido(), 0.1);
 
 		Titular titular3 = TitularHelper.criarTitularPadrao();
-		fachada.criarNovoTitular(titular2);
+		fachada.criarNovoTitular(titular3);
 		FontePagadora fonte31 = FontePagadoraHelper.criarFontePagadoraPorRenda(5000);
 		fachada.criarFontePagadora(titular3, fonte31);
 		FontePagadora fonte32 = FontePagadoraHelper.criarFontePagadoraPorRenda(10000);
