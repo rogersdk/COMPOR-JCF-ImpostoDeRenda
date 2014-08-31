@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import br.ufcg.ppgcc.compor.ir.Dependente;
 import br.ufcg.ppgcc.compor.ir.ExcecaoImpostoDeRenda;
 import br.ufcg.ppgcc.compor.ir.FachadaExperimento;
 import br.ufcg.ppgcc.compor.ir.FontePagadora;
@@ -13,6 +14,7 @@ import br.ufcg.ppgcc.compor.ir.Titular;
 public class ImpostoDeRenda implements FachadaExperimento{
 	
 	private Map<Titular, List<FontePagadora>> historicoTitularFonte = new LinkedHashMap<Titular, List<FontePagadora>>();
+	private Map<Titular, List<Dependente>> mapaTitularDependente = new LinkedHashMap<Titular, List<Dependente>>();
 	
 	public void criarNovoTitular(Titular titular) {
 		if(titular.getNome() == null){
@@ -29,6 +31,7 @@ public class ImpostoDeRenda implements FachadaExperimento{
 		}
 		
 		historicoTitularFonte.put(titular, new ArrayList<FontePagadora>());
+		mapaTitularDependente.put(titular, new ArrayList<Dependente>());
 	}
 
 	public List<Titular> listarTitulares() {
@@ -67,6 +70,20 @@ public class ImpostoDeRenda implements FachadaExperimento{
 
 	public List<FontePagadora> listarFontes(Titular titular) {
 		return historicoTitularFonte.get(titular);
+	}
+
+	public void criarDependente(Titular titular, Dependente dependente) {
+		if(mapaTitularDependente.containsKey(titular)){
+			List<Dependente> listaDeDependentesDoTitular = mapaTitularDependente.get(titular);
+			listaDeDependentesDoTitular.add(dependente);
+			mapaTitularDependente.put(titular, listaDeDependentesDoTitular);
+		}else{
+			throw new ExcecaoImpostoDeRenda("Titular não cadastrado");
+		}
+	}
+
+	public List<Dependente> listarDependentes(Titular titular) {
+		return mapaTitularDependente.get(titular);
 	}
 
 }
