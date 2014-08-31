@@ -25,8 +25,7 @@ public class ImpostoDeRenda implements FachadaExperimento{
 			throw new ExcecaoImpostoDeRenda("O campo CPF é obrigatório");
 		}
 		
-		if (!titular.getCpf().matches(
-				"[\\d]{3}\\.[\\d]{3}\\.[\\d]{3}\\-[\\d]{2}")) {
+		if (!ValidarCpf.validarCpf(titular.getCpf())) {
 			throw new ExcecaoImpostoDeRenda("O campo CPF está inválido");
 		}
 		
@@ -73,6 +72,24 @@ public class ImpostoDeRenda implements FachadaExperimento{
 	}
 
 	public void criarDependente(Titular titular, Dependente dependente) {
+		if(dependente.getCpf() == null){
+			throw new ExcecaoImpostoDeRenda("O campo CPF é obrigatório");
+		}
+		
+		if(dependente.getNome() == null){
+			throw new ExcecaoImpostoDeRenda("O campo nome é obrigatório");
+		}
+		
+		if(dependente.getTipo() == 0){
+			throw new ExcecaoImpostoDeRenda("O campo tipo é obrigatório");
+		}else if(dependente.getTipo() < 0 ){
+			throw new ExcecaoImpostoDeRenda("O campo tipo é inválido");
+		}
+		
+		if (!ValidarCpf.validarCpf(dependente.getCpf())) {
+			throw new ExcecaoImpostoDeRenda("O campo CPF é inválido");
+		}
+		
 		if(mapaTitularDependente.containsKey(titular)){
 			List<Dependente> listaDeDependentesDoTitular = mapaTitularDependente.get(titular);
 			listaDeDependentesDoTitular.add(dependente);
